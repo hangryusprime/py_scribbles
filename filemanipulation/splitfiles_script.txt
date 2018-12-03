@@ -1,0 +1,13 @@
+Split files in UNIX
+
+split --line-bytes=[size of outfiles without splitting lines/records] --numeric-suffixes=[number to start suffix outfiles from] --additional-suffix=[output file extension] [file name with extension] [outfile name prefix]
+example:  split --line-bytes=10M --numeric-suffixes=1 --additional-suffix=.txt text_file.txt text_file_seg
+
+Join files in UNIX
+cat [file(s) to be merged] >> [outfile]
+example: cat text_file_seg* >> text_file_merged.txt
+
+rm -rf text*.txt
+py text_file.py
+split --line-bytes=10M --numeric-suffixes=1 --additional-suffix=.txt text_file.txt text_file_seg
+cat text_file_seg* >> text_file_merged.txt
