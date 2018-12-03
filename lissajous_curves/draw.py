@@ -54,18 +54,20 @@ class Draw:
 			c0 = []
 			c1 = []
 			for i, j in zip(range(self.n), range(self.n)):
-				c0.append(Circle(center=(round(self.width*(3+2*i)/(2*(self.n+1))), round(self.height/(2*(self.n+1)))), 
-								 radius=round(self.height*0.95/(2*(self.n+1))), theta=0, velocity=i+1))
+				c0.append(Circle(center=(round(self.width*(3+2*i)/(2*(self.n+1))), round(self.height/(2*(self.n+1)))),
+				                 radius=round(self.height*0.9/(2*(self.n+1))), theta=0, velocity=i+1))
 				c1.append(Circle(center=(round(self.width/(2*(self.n+1))), round(self.height*(3+2*j)/(2*(self.n+1)))),
-				                 radius=round(self.height*0.95/(2*(self.n+1))), theta=0, velocity=j+1))
+				                 radius=round(self.height*0.9/(2*(self.n+1))), theta=0, velocity=j+1))
 
-			while c0[0].theta <= 2*pi:
+			while c0[0].theta <= 3*pi:
 				self.canvas.delete('pointer')  # always on
 				# self.canvas.delete('lj')       # clear lj curves
 				# self.canvas.delete('c0')       # clear top circles
 				# self.canvas.delete('c1')       # clear left circles
 				c0_prev = []
 				c1_prev = []
+				c0_active = []
+				c1_active = []
 				for i, j in zip(range(self.n), range(self.n)):
 					c0_prev.append((c0[i].x, c0[i].y))
 					c1_prev.append((c1[j].x, c1[j].y))
@@ -73,24 +75,29 @@ class Draw:
 				for i, j in zip(range(self.n), range(self.n)):
 						c0[i].theta += 0.05
 						c1[j].theta += 0.05
+						c0_active.append((c0[i].theta <= 2*pi))
+						c1_active.append((c1[j].theta <= 2*pi))
 						c0[i].update(theta=c0[i].theta)
 						c1[j].update(theta=c1[j].theta)
 				lj = [[Lissajous(x=c0[i].x, y=c1[j].y) for j in range(self.n)] for i in range(self.n)]
 				for i, j in zip(range(self.n), range(self.n)):
 					self.canvas.create_oval(c0[i].x - 3, c0[i].y - 3, c0[i].x + 3, c0[i].y + 3, fill='black',
 					                        outline='white', tags=f'pointer')
-					self.canvas.create_line(c0[i].x, c0[i].y, c0_prev[i][0], c0_prev[i][1], fill='white',
-					                        smooth='true', tags=f'c0')
 					self.canvas.create_oval(c1[j].x - 3, c1[j].y - 3, c1[j].x + 3, c1[j].y + 3, fill='black',
-					                        outline='white' ,tags=f'pointer')
-					self.canvas.create_line(c1[j].x, c1[j].y, c1_prev[j][0], c1_prev[j][1], fill='white',
-					                        smooth='true', tags=f'c1')
+					                        outline='white', tags=f'pointer')
+					if c0_active[i]:
+						self.canvas.create_line(c0[i].x, c0[i].y, c0_prev[i][0], c0_prev[i][1], fill='white',
+						                        smooth='true', tags=f'c0')
+					if c1_active[j]:
+						self.canvas.create_line(c1[j].x, c1[j].y, c1_prev[j][0], c1_prev[j][1], fill='white',
+						                        smooth='true', tags=f'c1')
 				for i in range(self.n):
 					for j in range(self.n):
 						self.canvas.create_oval(lj[i][j].x - 3, lj[i][j].y - 3, lj[i][j].x + 3, lj[i][j].y + 3,
 						                        fill='black', outline='white', tags=f'pointer')
-						self.canvas.create_line(lj[i][j].x, lj[i][j].y, lj_prev[i][j].x, lj_prev[i][j].y,
-						                        fill='white', smooth='true', tags=f'lj')
+						if c0_active[i] and c1_active[j]:
+							self.canvas.create_line(lj[i][j].x, lj[i][j].y, lj_prev[i][j].x, lj_prev[i][j].y,
+							                        fill='white', smooth='true', tags=f'lj')
 				self.canvas.update()
 			self.canvas.delete(ALL)
 			self.lj_matrix()
