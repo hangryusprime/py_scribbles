@@ -1,3 +1,4 @@
+import sys
 from tkinter import *
 from math import cos, sin, pi
 
@@ -108,4 +109,5 @@ class Draw:
 
 
 if __name__ == '__main__':
-    draw = Draw(8)
+    sys.argv.extend([8])
+    draw = Draw(int(sys.argv[1]))
